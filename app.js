@@ -7,10 +7,12 @@ const md5=require("md5");
 const bcrypt=require('bcrypt');
 const saltround=10;
 // const encrypt=require('mongoose-encryption');
-
+const findOrCreate=require("mongoose-findorcreate");
 const session=require("express-session");
 const passport =require("passport");
 const passportLocalMongoose=require("passport-local-mongoose");
+
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 
 
@@ -44,8 +46,27 @@ app.get('/register',(req,res)=>{
     res.render('register');
 });
 
+app.get('/srecet',(req,res)=>{
+    if(req.isAuthenticated()){
+        res.render('secret')
+    }
+    else{
+        res.redirect('/login');
+    }
+});
 
 app.post('/register',(req,res)=>{
+    User.register({username:req.body.useremail},req.body.userpassword,(err,user)=>{
+        if(err){
+            console.log(err)
+            res.redirect('/register');
+        }
+        else{
+            passport.authenticate("local")(req,res,()=>{
+                res.render('/sercet');
+            });
+        }
+    });
    
 });
 
