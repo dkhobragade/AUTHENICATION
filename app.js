@@ -8,8 +8,22 @@ const bcrypt=require('bcrypt');
 const saltround=10;
 // const encrypt=require('mongoose-encryption');
 
+const session=require("express-session");
+const passport =require("passport");
+const passportLocalMongoose=require("passport-local-mongoose");
+
+
 
 const app=express();
+
+app.use(session({
+    secret: 'our little secret',
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session()); 
 
 app.use(bodyparser.urlencoded({extended:true}));
 
@@ -32,35 +46,11 @@ app.get('/register',(req,res)=>{
 
 
 app.post('/register',(req,res)=>{
-    const newUser=new User({
-        email:req.body.useremail,
-        password:md5(req.body.userpassword)
-    }); 
-    newUser.save()
-    res.render('sercet');
+   
 });
 
 app.post('/login',(req,res)=>{
-    async function checkIfNameExists() {
-        const uname=req.body.useremail
-        const upass=md5(req.body.userpassword)
-
-        const data = await User.findOne({ email: uname });
-        if (data) {
-            const pass=data.password
-            if(upass===pass){
-                res.render('sercet');
-            }
-            else{
-                console.log("Password does not match")
-            }
-        } else {
-          console.log('Error: Name does not exist in the database');
-        }
-      }
-      
-      // Call the async function to check if the name exists
-      checkIfNameExists();
+    
 
 
 
